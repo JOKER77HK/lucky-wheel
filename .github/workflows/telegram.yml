@@ -1,0 +1,19 @@
+name: Send Telegram message on push
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  send-telegram-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send message to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.5893562352:AAGx-2U24wLgVYb9ATjDrsTQ7htRHhs7Sh8 }}
+          TELEGRAM_CHAT_ID: ${{ secrets.https://t.me/Joker77HK }}
+          MESSAGE: "The wheel has been spun!"
+        run: |
+          curl -X POST "https://api.telegram.org/bot${5893562352:AAGx-2U24wLgVYb9ATjDrsTQ7htRHhs7Sh8}/sendMessage" \
+          -d "chat_id=${https://t.me/Joker77HK}" \
+          -d "text=${MESSAGE}"
