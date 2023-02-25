@@ -27,7 +27,7 @@ jobs:
           name: env
           path: ${{ env.ENV_FILE }}
       - name: Set output
-        run: echo "::set-output name=result::${{ steps.set_output.outputs.RESULT }}"
+        run: echo "::GITHUB_OUTPUT name=result::${{ steps.GITHUB_OUTPUT.outputs.RESULT }}"
         env:
-          RESULT: ${{ steps.set_output.outputs.RESULT }}
+          RESULT: ${{ steps.GITHUB_OUTPUT.outputs.RESULT }}
           ENV_FILE: ${{ github.workspace }}/.env
