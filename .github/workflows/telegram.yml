@@ -8,12 +8,18 @@ jobs:
   send-telegram-message:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Send message to Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: "${{ secrets.TELEGRAM_CHAT_ID }}"
-          MESSAGE: "The wheel has been spun!"
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MESSAGE: "The wheel has been spun! The result is: ${{ steps.spin-wheel.outputs.result }}"
         run: |
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
           -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
           -d "text=${MESSAGE}"
+      - name: Spin the wheel
+        id: spin-wheel
+        run: echo "::set-output name=result::$(shuf -i 1-10 -n 1)"
+
