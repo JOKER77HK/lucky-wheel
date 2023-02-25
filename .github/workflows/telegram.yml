@@ -1,8 +1,7 @@
-name: Send Telegram message on push
+name: Telegram Notification
 
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   send-telegram-message:
@@ -10,16 +9,25 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Send message to Telegram
+      - name: Send Telegram message
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          MESSAGE: "The wheel has been spun! The result is: ${{ steps.spin-wheel.outputs.result }}"
+          RESULT: ${{ env.RESULT }}
         run: |
-          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-          -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-          -d "text=${MESSAGE}"
-      - name: Spin the wheel
-        id: spin-wheel
-        run: echo "::set-output name=result::$(shuf -i 1-10 -n 1)"
-
+          curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            -d "text=The wheel has been spun! The result is: ${RESULT}"
+      - name: Set output variable
+        run: echo "RESULT=$(shuf -i 1-10 -n 1)" >> $GITHUB_ENV
+        id: set_output
+      - name: Upload Environment File
+        uses: actions/upload-artifact@v2
+        with:
+          name: env
+          path: ${{ env.ENV_FILE }}
+      - name: Set output
+        run: echo "::set-output name=result::${{ steps.set_output.outputs.RESULT }}"
+        env:
+          RESULT: ${{ steps.set_output.outputs.RESULT }}
+          ENV_FILE: ${{ github.workspace }}/.env
